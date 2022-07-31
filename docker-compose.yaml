@@ -1,0 +1,16 @@
+version: '3.7'
+
+services:
+  faceapi:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: "face-recog-api"
+    ports:
+      - 8080:8080
+    volumes:
+      - ./src:/app
+    environment:
+      GUNICORN_WORKER: 2
+      GUNICORN_PORT: 8080
+  
