@@ -1,11 +1,29 @@
 import falcon,json
 from facedetector.facedetector import FaceDetector
 from falcon_multipart.middleware import MultipartMiddleware
+import hashlib
+
+SECRET_KEY = ""
+with open(".env") as env:
+    _str = env.readlines()
+    for s in _str:
+        s.replace("\n", "")
+        res = s.split("=")
+        if(res[0] == "SECRET_KEY"):
+            SECRET_KEY = res[1]
 
 MODEL = FaceDetector()
 
 class RegisterFaces:
     def on_post(self, req, res):
+        token = req.get_param("token")
+        sha = req.get_param("sha")
+
+        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+            res.status = falcon.HTTP_401
+            res.text = json.dumps({"message":"invalid access!"})
+            return 
+
         incoming_files = req.get_param_as_list("faces")
         features = []
         for incoming_file in incoming_files:
@@ -19,6 +37,14 @@ class RegisterFaces:
 
 class RegisterFace:
     def on_post(self, req, res):
+        token = req.get_param("token")
+        sha = req.get_param("sha")
+
+        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+            res.status = falcon.HTTP_401
+            res.text = json.dumps({"message":"invalid access!"})
+            return 
+
         incoming_file = req.get_param("face")
         try:
             features = MODEL.extractFeatures(incoming_file.file, output="list")
@@ -34,6 +60,14 @@ class RegisterFace:
 
 class VerifyFace:
     def on_post(self, req, res):
+        token = req.get_param("token")
+        sha = req.get_param("sha")
+
+        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+            res.status = falcon.HTTP_401
+            res.text = json.dumps({"message":"invalid access!"})
+            return 
+
         incoming_file = req.get_param("face")
         sourcetype = req.get_param("sourcetype")
         list_of_features = req.get_param_as_list("encodings") if sourcetype == "string" else json.loads(req.get_param("encodings"))

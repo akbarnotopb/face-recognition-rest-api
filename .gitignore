@@ -1,3 +1,5 @@
 src/__pychache__
 
 *.pyc
+
+.env
