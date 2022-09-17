@@ -22,7 +22,9 @@ class FaceDetector:
         image = fr.load_image_file(file)
         encoding = fr.face_encodings(image)
         if(len(encoding) == 0 ):
-            raise Exception("No face detected!")
+            raise Exception("Wajah tidak terdeteksi!")
+        elif(len(encoding) > 1):
+            raise Exception("Terdapat 2 wajah terdeteksi!")
         
         if output == "string":
             return self.ndArray2String(encoding[0])
