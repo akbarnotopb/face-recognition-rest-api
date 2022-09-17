@@ -7,7 +7,7 @@ SECRET_KEY = ""
 with open(".env") as env:
     _str = env.readlines()
     for s in _str:
-        s.replace("\n", "")
+        s = s[:-1] #remove \n
         res = s.split("=")
         if(res[0] == "SECRET_KEY"):
             SECRET_KEY = res[1]
