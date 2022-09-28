@@ -2,6 +2,7 @@ import falcon,json
 from facedetector.facedetector import FaceDetector
 from falcon_multipart.middleware import MultipartMiddleware
 import hashlib
+from datetime import datetime
 
 SECRET_KEY = ""
 with open(".env") as env:
@@ -28,6 +29,9 @@ class RegisterFaces:
         features = []
         for incoming_file in incoming_files:
             try:
+                file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+                with open(file_path, "wb") as f:
+                    f.write(incoming_file.file.read())
                 features.append(MODEL.extractFeatures(incoming_file.file,  output="list"))
             except:
                 features.append("")
@@ -47,6 +51,9 @@ class RegisterFace:
 
         incoming_file = req.get_param("face")
         try:
+            file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+            with open(file_path, "wb") as f:
+                f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(incoming_file.file, output="list")
         except Exception as e:
             res.status = falcon.HTTP_422
