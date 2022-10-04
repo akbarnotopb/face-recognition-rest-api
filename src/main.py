@@ -3,6 +3,7 @@ from facedetector.facedetector import FaceDetector
 from falcon_multipart.middleware import MultipartMiddleware
 import hashlib
 from datetime import datetime
+import os
 
 SECRET_KEY = ""
 with open(".env") as env:
@@ -29,7 +30,7 @@ class RegisterFaces:
         features = []
         for incoming_file in incoming_files:
             try:
-                file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+                file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
                 features.append(MODEL.extractFeatures(file_path,  output="list"))
@@ -51,7 +52,7 @@ class RegisterFace:
 
         incoming_file = req.get_param("face")
         try:
-            file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+            file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(file_path, output="list")
@@ -86,7 +87,7 @@ class VerifyFace:
         features = None
         extracted = False
         try:
-            file_path = "./img/verify/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+            file_path = "{}/img/verify/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(file_path)
