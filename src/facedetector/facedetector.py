@@ -1,5 +1,6 @@
 import face_recognition as fr
 import numpy as np
+import os
 
 class FaceDetector:
     def __init__(self):
@@ -19,6 +20,9 @@ class FaceDetector:
         return res
 
     def extractFeatures(self, file, output="ndarray"):
+        if not os.path.exists(file):
+            raise Exception("File not found!")
+            
         image = fr.load_image_file(file)
         encoding = fr.face_encodings(image)
         if(len(encoding) == 0 ):
