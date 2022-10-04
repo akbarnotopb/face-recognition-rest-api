@@ -5,7 +5,7 @@ class FaceDetector:
     def __init__(self):
         pass
 
-    def compareEmbedding(self, source, target, sourcetype="ndarray" , tolerance = 0.5):
+    def compareEmbedding(self, source, target, sourcetype="ndarray" , tolerance = 0.4):
         databases = []
         for encoded in source:
             if(sourcetype == "string"):

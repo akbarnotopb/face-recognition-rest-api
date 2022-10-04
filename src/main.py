@@ -20,7 +20,7 @@ class RegisterFaces:
         token = req.get_param("token")
         sha = req.get_param("sha")
 
-        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
             res.text = json.dumps({"message":"invalid access!"})
             return 
@@ -32,7 +32,7 @@ class RegisterFaces:
                 file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
-                features.append(MODEL.extractFeatures(incoming_file.file,  output="list"))
+                features.append(MODEL.extractFeatures(file_path,  output="list"))
             except:
                 features.append("")
         
@@ -44,7 +44,7 @@ class RegisterFace:
         token = req.get_param("token")
         sha = req.get_param("sha")
 
-        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
             res.text = json.dumps({"message":"invalid access!"})
             return 
@@ -54,7 +54,7 @@ class RegisterFace:
             file_path = "./img/register/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            features = MODEL.extractFeatures(incoming_file.file, output="list")
+            features = MODEL.extractFeatures(file_path, output="list")
         except Exception as e:
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
@@ -70,7 +70,7 @@ class VerifyFace:
         token = req.get_param("token")
         sha = req.get_param("sha")
 
-        if(sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
             res.text = json.dumps({"message":"invalid access!"})
             return 
@@ -86,7 +86,10 @@ class VerifyFace:
         features = None
         extracted = False
         try:
-            features = MODEL.extractFeatures(incoming_file.file)
+            file_path = "./img/verify/{}-{}".format( datetime.now().strftime("%Y%m%d-%H:%M:%S.%f"), incoming_file.filename)
+            with open(file_path, "wb") as f:
+                f.write(incoming_file.file.read())
+            features = MODEL.extractFeatures(file_path)
             extracted = True
         except Exception as e:
             res.status = falcon.HTTP_422
@@ -98,7 +101,7 @@ class VerifyFace:
             res.text = json.dumps({"message":"Something went wrong!"})
             return 
         
-        verification_result = MODEL.compareEmbedding(list_of_features, features, sourcetype=sourcetype, tolerance = tolerance if tolerance != None else 0.5) 
+        verification_result = MODEL.compareEmbedding(list_of_features, features, sourcetype=sourcetype, tolerance = tolerance if tolerance != None else 0.4) 
 
         res.text = json.dumps(verification_result, default=str)
 
