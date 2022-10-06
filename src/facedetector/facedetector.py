@@ -24,8 +24,7 @@ class FaceDetector:
             raise Exception("File not found!")
             
         image = fr.load_image_file(file)
-        face_locations = fr.face_locations(image, number_of_times_to_upsample=2)
-        encoding = fr.face_encodings(image, known_face_locations=face_locations)
+        encoding = fr.face_encodings(image)
         if(len(encoding) == 0 ):
             raise Exception("Wajah tidak terdeteksi!")
         elif(len(encoding) > 1):
