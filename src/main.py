@@ -30,7 +30,7 @@ class RegisterFaces:
         features = []
         for incoming_file in incoming_files:
             try:
-                file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
+                file_path = "{}/img/register/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
                 features.append(MODEL.extractFeatures(file_path,  output="list"))
@@ -45,14 +45,14 @@ class RegisterFace:
         token = req.get_param("token")
         sha = req.get_param("sha")
 
-        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
-            res.status = falcon.HTTP_401
-            res.text = json.dumps({"message":"invalid access!"})
-            return 
+        # if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+        #     res.status = falcon.HTTP_401
+        #     res.text = json.dumps({"message":"invalid access!"})
+        #     return 
 
         incoming_file = req.get_param("face")
         try:
-            file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
+            file_path = "{}/img/register/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(file_path, output="list")
@@ -87,7 +87,7 @@ class VerifyFace:
         features = None
         extracted = False
         try:
-            file_path = "{}/img/verify/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
+            file_path = "{}/img/verify/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(file_path)
