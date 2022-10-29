@@ -20,7 +20,6 @@ class RegisterFaces:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
-        sleep = req.get_param("sleep")
 
         if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
@@ -34,8 +33,6 @@ class RegisterFaces:
                 file_path = "{}/img/register/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
-                if(sleep != None):
-                    time.sleep(int(sleep))
                 features.append(MODEL.extractFeatures(file_path,  output="list"))
             except:
                 features.append("")
@@ -47,20 +44,17 @@ class RegisterFace:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
-        sleep = req.get_param("sleep")
 
-        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
-            res.status = falcon.HTTP_401
-            res.text = json.dumps({"message":"invalid access!"})
-            return 
+        # if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
+        #     res.status = falcon.HTTP_401
+        #     res.text = json.dumps({"message":"invalid access!"})
+        #     return 
 
         incoming_file = req.get_param("face")
         try:
             file_path = "{}/img/register/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            if(sleep != None):
-                time.sleep(int(sleep))
             features = MODEL.extractFeatures(file_path, output="list")
         except Exception as e:
             res.status = falcon.HTTP_422
@@ -76,7 +70,6 @@ class VerifyFace:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
-        sleep = req.get_param("sleep")
 
         if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
@@ -97,8 +90,6 @@ class VerifyFace:
             file_path = "{}/img/verify/{}.jpg".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"))
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            if(sleep != None):
-                time.sleep(int(sleep))
             features = MODEL.extractFeatures(file_path)
             extracted = True
         except Exception as e:
