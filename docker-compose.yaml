@@ -2,9 +2,7 @@ version: '3.7'
 
 services:
   faceapi:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: "akbarnotopb/face-api"
     container_name: "face-recog-api"
     ports:
       - 8080:8080
