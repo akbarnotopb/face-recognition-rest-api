@@ -23,8 +23,14 @@ RUN apt-get -y update && apt-get install -y --fix-missing \
     python3-numpy \
     software-properties-common \
     zip \
+    libgl1-mesa-glx \
+    ffmpeg \
+    libsm6 \
+    libxext6 \
+    libxrender-dev \
+    libxrender1  \
+    libfontconfig1 \
     && apt-get clean && rm -rf /tmp/* /var/tmp/*
-
 # Virtual Environment
 ENV VIRTUAL_ENV=/opt/venv
 RUN python3 -m venv $VIRTUAL_ENV

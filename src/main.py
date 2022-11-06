@@ -20,6 +20,7 @@ class RegisterFaces:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
+        mode = req.get_param("mode")
 
         if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
@@ -33,7 +34,7 @@ class RegisterFaces:
                 file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
-                features.append(MODEL.extractFeatures(file_path,  output="list"))
+                features.append(MODEL.extractFeatures(file_path,  output="list", mode="fr" if mode == None else mode))
             except:
                 features.append("")
         
@@ -44,6 +45,8 @@ class RegisterFace:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
+        mode = req.get_param("mode")
+
 
         if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
@@ -55,7 +58,7 @@ class RegisterFace:
             file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            features = MODEL.extractFeatures(file_path, output="list")
+            features = MODEL.extractFeatures(file_path, output="list", mode="fr" if mode == None else mode)
         except Exception as e:
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
@@ -70,6 +73,7 @@ class VerifyFace:
     def on_post(self, req, res):
         token = req.get_param("token")
         sha = req.get_param("sha")
+        mode = req.get_param("mode")
 
         if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
@@ -90,7 +94,7 @@ class VerifyFace:
             file_path = "{}/img/verify/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            features = MODEL.extractFeatures(file_path)
+            features = MODEL.extractFeatures(file_path, mode="fr" if mode == None else mode)
             extracted = True
         except Exception as e:
             res.status = falcon.HTTP_422

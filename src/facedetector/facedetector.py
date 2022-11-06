@@ -1,6 +1,14 @@
 import face_recognition as fr
 import numpy as np
 import os
+import logging
+import imutils
+import cv2
+
+logging.basicConfig(
+    format='%(asctime)-15s: %(name)s - %(levelname)s: %(message)s')
+LOGGER = logging.getLogger('connectors-deploy')
+LOGGER.setLevel(logging.INFO)
 
 class FaceDetector:
     def __init__(self):
@@ -19,12 +27,23 @@ class FaceDetector:
         res = fr.compare_faces(databases, target, tolerance=tolerance)
         return res
 
-    def extractFeatures(self, file, output="ndarray"):
+    def extractFeatures(self, file, output="ndarray" , mode = "fr" ):
         if not os.path.exists(file):
             raise Exception("File not found!")
-            
-        image = fr.load_image_file(file)
-        encoding = fr.face_encodings(image)
+
+        if(mode == "fr"):
+            image = fr.load_image_file(file, mode="L")
+            encoding = fr.face_encodings(image)
+        elif(mode == "native"):
+            LOGGER.info("native")
+            image = cv2.imread(file)
+            image = imutils.resize(image, width=600)
+            rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+            locations = fr.face_locations(rgb)
+            LOGGER.info("locations {}".format(locations))
+            encoding = fr.face_encodings(image, known_face_locations=locations)
+            LOGGER.info("encodings {}".format(encoding))
+
         if(len(encoding) == 0 ):
             raise Exception("Wajah tidak terdeteksi!")
         elif(len(encoding) > 1):
