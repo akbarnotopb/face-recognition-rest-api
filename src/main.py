@@ -34,7 +34,7 @@ class RegisterFaces:
                 file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
-                features.append(MODEL.extractFeatures(file_path,  output="list", mode="fr" if mode == None else mode))
+                features.append(MODEL.extractFeatures(file_path,  output="list", mode="native" if mode == None else mode))
             except:
                 features.append("")
         
@@ -58,7 +58,7 @@ class RegisterFace:
             file_path = "{}/img/register/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            features = MODEL.extractFeatures(file_path, output="list", mode="fr" if mode == None else mode)
+            features = MODEL.extractFeatures(file_path, output="list", mode="native" if mode == None else mode)
         except Exception as e:
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
@@ -94,7 +94,7 @@ class VerifyFace:
             file_path = "{}/img/verify/{}-{}".format( os.getcwd() ,datetime.now().strftime("%Y%m%d-%H:%M:%S-%f"), incoming_file.filename)
             with open(file_path, "wb") as f:
                 f.write(incoming_file.file.read())
-            features = MODEL.extractFeatures(file_path, mode="fr" if mode == None else mode)
+            features = MODEL.extractFeatures(file_path, mode="native" if mode == None else mode)
             extracted = True
         except Exception as e:
             res.status = falcon.HTTP_422
