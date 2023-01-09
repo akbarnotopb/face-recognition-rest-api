@@ -27,6 +27,20 @@ class FaceDetector:
         res = fr.compare_faces(databases, target, tolerance=tolerance)
         return res
 
+    def compareWithDistancesself(self, source, target, sourcetype="ndarray" , tolerance = 0.4):
+        databases = []
+        for encoded in source:
+            if(sourcetype == "string"):
+                databases.append(self.string2ndArray(encoded))
+            elif(sourcetype == "list"):
+                databases.append(np.array(encoded))
+            else:
+                databases.append(encoded)
+        
+        distances = fr.face_distance(databases, target)
+
+        return {"accuracy":list(1-distances), "distance":list(distances), "result":list(distances<= tolerance)}
+
     def extractFeatures(self, file, output="ndarray" , mode = "fr" ):
         if not os.path.exists(file):
             raise Exception("File not found!")
