@@ -6,10 +6,9 @@ from datetime import datetime
 import os, time
 import logging
 logger = logging.getLogger()
-logger.setLevel("INFO")
+logger.setLevel("ERROR")
 
 SECRET_KEY = ""
-WEB_TOKEN = ""
 with open(".env") as env:
     _str = env.readlines()
     for s in _str:
@@ -17,10 +16,6 @@ with open(".env") as env:
         res = s.split("=")
         if(res[0] == "SECRET_KEY"):
             SECRET_KEY = res[1]
-        elif(res[0] == "WEB_TOKEN"):
-            WEB_TOKEN = res[1]
-
-logger.info(WEB_TOKEN)
 
 MODEL = FaceDetector()
 
@@ -43,8 +38,10 @@ class RegisterFaces:
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
                 features.append(MODEL.extractFeatures(file_path,  output="list", mode="native" if mode == None else mode))
-            except:
-                features.append("[]")
+            except Exception as e:
+                res.status = falcon.HTTP_422
+                res.text = json.dumps({"message":str(e)})
+                return 
         
         res.status = falcon.HTTP_200
         res.text = json.dumps(features)
@@ -68,6 +65,7 @@ class RegisterFace:
                 f.write(incoming_file.file.read())
             features = MODEL.extractFeatures(file_path, output="list", mode="native" if mode == None else mode)
         except Exception as e:
+            logger.error(str(e))
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
             return 
@@ -105,6 +103,7 @@ class VerifyFace:
             features = MODEL.extractFeatures(file_path, mode="native" if mode == None else mode)
             extracted = True
         except Exception as e:
+            logger.error(str(e))
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
             return 
@@ -147,6 +146,7 @@ class VerifyFaceV2:
             features = MODEL.extractFeatures(file_path, mode="native" if mode == None else mode)
             extracted = True
         except Exception as e:
+            logger.error(str(e))
             res.status = falcon.HTTP_422
             res.text = json.dumps({"message":str(e)})
             return 
@@ -165,8 +165,8 @@ class WebRegistration:
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
-        
-        if(token == None or sha == None or sha != hashlib.sha256((WEB_TOKEN+token).encode()).hexdigest()):
+
+        if(token == None or sha == None or sha != hashlib.sha256((SECRET_KEY+token).encode()).hexdigest()):
             res.status = falcon.HTTP_401
             res.text = json.dumps({"message":"invalid access!"})
             return 
@@ -179,8 +179,10 @@ class WebRegistration:
                 with open(file_path, "wb") as f:
                     f.write(incoming_file.file.read())
                 features.append(MODEL.extractFeatures(file_path,  output="list", mode="native" if mode == None else mode))
-            except:
-                features.append("[]")
+            except Exception as e:
+                res.status = falcon.HTTP_422
+                res.text = json.dumps({"message":str(e)})
+                return 
         
         res.status = falcon.HTTP_200
         res.text = json.dumps(features)
