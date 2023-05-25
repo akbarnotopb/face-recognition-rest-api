@@ -6,6 +6,7 @@ services:
     container_name: "face-recog-api"
     ports:
       - 8001:8080
+    restart: always
     volumes:
       - ./src:/app
     environment:
