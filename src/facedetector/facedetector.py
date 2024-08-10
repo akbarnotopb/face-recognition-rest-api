@@ -44,19 +44,16 @@ class FaceDetector:
     def extractFeatures(self, file, output="ndarray" , mode = "fr" ):
         if not os.path.exists(file):
             raise Exception("File not found!")
-
+        LOGGER.info(f"Extracting on mode {mode}...")
         if(mode == "fr"):
             image = fr.load_image_file(file, mode="L")
             encoding = fr.face_encodings(image)
         elif(mode == "native"):
-            LOGGER.info("native")
             image = cv2.imread(file)
             image = imutils.resize(image, width=600)
             rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
             locations = fr.face_locations(rgb)
-            LOGGER.info("locations {}".format(locations))
             encoding = fr.face_encodings(image, known_face_locations=locations)
-            LOGGER.info("encodings {}".format(encoding))
 
         if(len(encoding) == 0 ):
             raise Exception("Wajah tidak terdeteksi!")
