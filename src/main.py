@@ -29,6 +29,7 @@ if(DEBUG):
 
 class RegisterFaces:
     def on_post(self, req, res):
+        logging.info("Register faces requested...")
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
@@ -56,6 +57,7 @@ class RegisterFaces:
 
 class RegisterFace:
     def on_post(self, req, res):
+        logging.info("Register face requested...")
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
@@ -85,6 +87,7 @@ class RegisterFace:
 
 class VerifyFace:
     def on_post(self, req, res):
+        logging.info("Verify face requested...")
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
@@ -128,6 +131,7 @@ class VerifyFace:
 
 class VerifyFaceV2:
     def on_post(self, req, res):
+        logging.info("Verify face V2 requested...")
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
@@ -170,6 +174,7 @@ class VerifyFaceV2:
 
 class WebRegistration:
     def on_post(self, req, res):
+        logging.info("Web registration requested...")
         token = req.get_param("token")
         sha = req.get_param("sha")
         mode = req.get_param("mode")
@@ -197,6 +202,7 @@ class WebRegistration:
 
 class ServerStatus:
     def on_get(self, req, res):
+        logging.info("Server status ok...")
         res.status = falcon.HTTP_200
         res.text = json.dumps({"message":"running normal"})
 
